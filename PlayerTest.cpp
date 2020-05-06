@@ -3,23 +3,28 @@
 #include <gmock/gmock.h>
 #include <string>
 #include "Player.h"
+#include "utility.h"
 using namespace std;
 using ::testing::AtLeast;
 using ::testing::Return;
 using ::testing::_;
+using ::testing::ElementsAre;
+using ::testing::InvokeWithoutArgs;
 
 struct PlayerTest : public testing::Test
 {
 	Player *p;
+	utility* util= new utility();
 
 	virtual void SetUp()
 	{
-		p = new Player("Player1");
+		p = new Player("Player1",util);
 	}
 	
 	virtual void TearDown()
 	{
 		delete p;
+		delete util;
 	}
 };
 
@@ -40,13 +45,30 @@ TEST_F(PlayerTest, MarkerTest)
 	EXPECT_NE('A',p->getMarker());
 }
 
-TEST_F(PlayerTest, placeMarker)
+class MockUtility : public utility
 {
-	
+	public:
+		MOCK_METHOD0(getStringInput, string());
+};
+
+TEST(PlayerTest1, placeMarker)
+{
+	MockUtility util;
+	Player* p = new Player("Player1",&util);
+
+	//string s ="1,2";
+	EXPECT_CALL(util, getStringInput())
+	.Times(1)
+	.WillOnce(Return("1,2"));
+
+	vector<int> output = p->placeMarker();
+
+	EXPECT_THAT(output , ElementsAre(1,2));
 }
 
 int main(int argc, char** argv)
 {
 	testing::InitGoogleTest(&argc, argv);
+	::testing::InitGoogleMock(&argc, argv); 
 	return RUN_ALL_TESTS();
 }

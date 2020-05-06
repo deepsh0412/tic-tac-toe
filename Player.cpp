@@ -1,6 +1,6 @@
 #include "Player.h"
 
-Player::Player(string playerName):name(playerName)
+Player::Player(string playerName,utility* utils):name(playerName),util(utils)
 {
 	cout << "Player named " << name << " created" << endl;
 	marker = '\0';
@@ -27,10 +27,8 @@ void Player::setMarker(char mark)
 	marker = mark;
 }
 
-vector<int> Player::parseInput(string s)
+bool Player::parseInput(string s, vector<int> (&input))
 {
-	vector<int> input;
-
 	char delimeter = ',';
 	string token;
 	istringstream tokenStream(s);
@@ -44,13 +42,14 @@ vector<int> Player::parseInput(string s)
 		catch(...)
 		{
 			cout << "Error" << endl;
+			return false;
 		}
 	}
 	
-	return input;
+	return true;
 }
 
-bool Player::validateInput(vector<int> input)
+bool Player::validateInput(vector<int> (&input))
 {
 	if(input.size() != 2)
 		return false;
@@ -61,28 +60,29 @@ bool Player::validateInput(vector<int> input)
 	return true;
 }
 
-vector<int> Player::placeMarker()
+bool Player::placeMarker(vector<int> (&parsedInput))
 {
-	vector<int> parsedInput;
-	while(1)
-	{
-		cout << name << " please enter index to be updated" << endl;
-		string input = getUserInput();
+	cout << name << " please enter index to be updated" << endl;
+	string input = util->getStringInput();
 
-		parsedInput = parseInput(input);
-		if(!validateInput(parsedInput))
-		{
-			cout << "Invalid Input, retry with correct format" << endl;
-			continue;
-		}
-		break;
+	if(!parseInput(input, parsedInput))
+	{
+		cout << "parsing failed, retry with correct format" << endl;
+		return false;
 	}
-	return parsedInput;
+
+	if(!validateInput(parsedInput))
+	{
+		cout << "Invalid Input, retry with correct format" << endl;
+		return false;
+	}
+	return true;
 }
 
+/*
 string Player::getUserInput()
 {
 	string input;
 	cin >> input;
 	return input;
-}
+}*/

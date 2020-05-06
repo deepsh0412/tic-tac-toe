@@ -69,8 +69,9 @@ void GameClass::play()
 	{
 		showBoard();
 		Player* p = whoShouldPlayNext();
+		vector<int> input;
 		
-		if(!board->updateBoard(p->placeMarker(), p->getMarker()))
+		if(!p->placeMarker(input) || !board->updateBoard(input, p->getMarker()))
 		{
 			cout << "Invalid index updated, try again " << p->getName() << " !!!" << endl;
 			continue;
