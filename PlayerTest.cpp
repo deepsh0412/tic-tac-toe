@@ -56,13 +56,18 @@ TEST(PlayerTest1, placeMarker)
 	MockUtility util;
 	Player* p = new Player("Player1",&util);
 
-	//string s ="1,2";
+	string s ="1,2";
 	EXPECT_CALL(util, getStringInput())
 	.Times(1)
 	.WillOnce(Return("1,2"));
 
-	vector<int> output = p->placeMarker();
+	vector<int> output;
+	output.push_back(1);
+	output.push_back(2);
 
+	bool result  = p->placeMarker(output);
+
+	EXPECT_EQ(result, true);
 	EXPECT_THAT(output , ElementsAre(1,2));
 }
 
